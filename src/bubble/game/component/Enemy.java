@@ -1,5 +1,8 @@
 package bubble.game.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -17,7 +20,6 @@ import lombok.Setter;
 public class Enemy extends JLabel implements Movable {
 	private BubbleFrame mContext;
 	// 위치 상태
-	private final Location initLoc;
 	private Location loc;
 
 	// 움직임에 대한 상태
@@ -26,9 +28,12 @@ public class Enemy extends JLabel implements Movable {
 	private boolean up;
 	private boolean down;
 
+	// 벽 충돌 상태
+	private boolean leftWallCrash;
+	private boolean rightWallCrash;
+	private boolean bottomWallCrash;
+	
 	private int state; // 0(live) , 1(bubbled)
-	// 적 움직임에 대한 패턴
-	private EnemyPattern pattern;
 
 	// 플레이어의 방향
 	private EnemyWay enemyWay;
@@ -37,13 +42,18 @@ public class Enemy extends JLabel implements Movable {
 	private final int SPEED = 3;
 	private final int JUMP_SPEED = 1; // up, down
 	private ImageIcon enemyR, enemyL;
+	
+	// 적 움직임에 대한 패턴
+	private EnemyPattern pattern;
+	List<EnemyWay> moveList;
 
 	public Enemy(BubbleFrame mContext, Location loc) {
+		this.loc = loc;
+		this.mContext = mContext;
 		initObject();
-		initLoc = loc;
 		initSetting();
 		initBackgroundEnemyService();
-		this.mContext = mContext;
+		moveList = new ArrayList<>();
 	}
 
 	private void initObject() {
@@ -52,7 +62,7 @@ public class Enemy extends JLabel implements Movable {
 	}
 
 	private void initSetting() {
-		loc = new Location(initLoc.getX(), initLoc.getY());
+		loc = new Location(loc.getX(), loc.getY());
 
 		left = false;
 		right = false;
@@ -61,7 +71,11 @@ public class Enemy extends JLabel implements Movable {
 
 		enemyWay = EnemyWay.RIGHT;
 		pattern = EnemyPattern.DEFAULT;
-
+		
+		setLeftWallCrash(false);
+		setRightWallCrash(false);
+		setBottomWallCrash(false);
+		
 		setIcon(enemyR);
 		setSize(50, 50);
 		setLocation(loc.getX(), loc.getY());

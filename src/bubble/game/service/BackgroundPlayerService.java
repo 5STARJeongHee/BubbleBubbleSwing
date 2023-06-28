@@ -34,7 +34,7 @@ public class BackgroundPlayerService implements Runnable {
 			Color rightColor = new Color(image.getRGB(player.getX() + 50 + 15, player.getY() + 25));
 			
 			// -2 가 나오면 바닥 흰색
-			int bottomColor = image.getRGB(player.getX() +10, player.getY() +50 +5) + image.getRGB(player.getX() -10 +50, player.getY() +50 +5);
+			int bottomColor = image.getRGB(player.getX() +10, player.getY() +50 +2) + image.getRGB(player.getX() -10 +50, player.getY() +50 +2);
 			
 			// 1. 버블 충돌 확인
 			for(int i = 0 ; i< bubbleList.size(); i++){

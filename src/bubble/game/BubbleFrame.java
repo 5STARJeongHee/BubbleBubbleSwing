@@ -50,7 +50,7 @@ public class BubbleFrame extends JFrame {
 						}
 						break;
 					case KeyEvent.VK_UP:
-						if(!player.isUp() && player.isDown()) {
+						if(!player.isUp() && !player.isDown()) {
 							player.up();
 						}
 						break;
@@ -84,7 +84,7 @@ public class BubbleFrame extends JFrame {
 		
 	}
 	private void initObject() {
-		backgroundMap = new JLabel(new ImageIcon("image/backgroundMapService.png"));
+		backgroundMap = new JLabel(new ImageIcon("image/backgroundMap.png"));
 //		backgroundMap.setSize(974,581);
 //		backgroundMap.setLocation(0,10);
 //		getContentPane().add(backgroundMap); // JFrame에 추가

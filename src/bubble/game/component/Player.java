@@ -37,7 +37,7 @@ public class Player extends JLabel implements Movable {
 	private boolean rightWallCrash;
 	// 플레이어 이동 속도
 	private final int SPEED = 4;
-	private final int JUMP_SPEED = 2; // up, down
+	private final int JUMP_SPEED = 3; // up, down
 	private ImageIcon playerR, playerL;
 
 	public Player(BubbleFrame mContext) {
@@ -127,7 +127,7 @@ public class Player extends JLabel implements Movable {
 		up = true;
 
 		new Thread(() -> {
-			for (int i = 0; i < 130 / JUMP_SPEED; i++) {
+			for (int i = 0; i < 120 / JUMP_SPEED; i++) {
 				y -= JUMP_SPEED;
 				setLocation(x, y);
 				try {
@@ -150,7 +150,7 @@ public class Player extends JLabel implements Movable {
 				y += JUMP_SPEED;
 				setLocation(x, y);
 				try {
-					Thread.sleep(3);
+					Thread.sleep(4);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
