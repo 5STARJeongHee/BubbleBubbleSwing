@@ -18,6 +18,7 @@ import lombok.Setter;
 public class Player extends JLabel implements Movable {
 	private BubbleFrame mContext;
 	private List<Bubble> bubbleList;
+	
 	// 위치 상태
 	private int x;
 	private int y;
@@ -28,6 +29,8 @@ public class Player extends JLabel implements Movable {
 	private boolean up;
 	private boolean down;
 
+	// 적과 충돌 상태
+	private int state; // 0(dead) , 1(alive)
 	
 	// 플레이어의 방향
 	private PlayerWay playerWay;
@@ -41,10 +44,11 @@ public class Player extends JLabel implements Movable {
 	private ImageIcon playerR, playerL;
 
 	public Player(BubbleFrame mContext) {
+		this.mContext = mContext;
 		initObject();
 		initSetting();
 		initBackgroundPlayerService();
-		this.mContext = mContext;
+		
 	}
 
 	private void initObject() {
@@ -54,6 +58,8 @@ public class Player extends JLabel implements Movable {
 
 	private void initSetting() {
 		bubbleList = new ArrayList<>();
+		
+		state = 1;
 		
 		x = 80;
 		y = 535;
@@ -71,6 +77,8 @@ public class Player extends JLabel implements Movable {
 		setIcon(playerR);
 		setSize(50, 50);
 		setLocation(x, y);
+		
+		
 	}
 
 	private void initBackgroundPlayerService() {
@@ -83,6 +91,9 @@ public class Player extends JLabel implements Movable {
 	@Override
 	public void left() {
 //		System.out.println("left 스레드 생성");
+		if(state == 0) {
+			return;
+		}
 		playerWay = PlayerWay.LEFT;
 		left = true;
 		new Thread(() -> {
@@ -103,6 +114,9 @@ public class Player extends JLabel implements Movable {
 	@Override
 	public void right() {
 //		System.out.println("right 스레드 생성");
+		if(state == 0) {
+			return;
+		}
 		playerWay = PlayerWay.RIGHT;
 		right = true;
 		new Thread(() -> {
@@ -123,6 +137,9 @@ public class Player extends JLabel implements Movable {
 	// left + up, right + up, up
 	@Override
 	public void up() {
+		if(state == 0) {
+			return;
+		}
 //		System.out.println("up");
 		up = true;
 
@@ -144,6 +161,9 @@ public class Player extends JLabel implements Movable {
 
 	@Override
 	public void down() {
+		if(state == 0) {
+			return;
+		}
 		down = true;
 		new Thread(() -> {
 			while(down){
@@ -161,6 +181,9 @@ public class Player extends JLabel implements Movable {
 
 	@Override
 	public void attack() {
+		if(state == 0) {
+			return;
+		}
 		new Thread(()-> {
 			Bubble bubble = new Bubble(mContext);
 			mContext.add(bubble);

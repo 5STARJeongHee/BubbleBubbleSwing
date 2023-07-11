@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import bubble.game.BubbleFrame;
+import bubble.game.EnemyMovable;
 import bubble.game.Movable;
 import bubble.game.service.BackgroundEnemyService;
 import bubble.game.state.EnemyPattern;
@@ -17,8 +18,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Enemy extends JLabel implements Movable {
+public class Enemy extends JLabel implements EnemyMovable {
 	private BubbleFrame mContext;
+	private Player player;
+	
 	// 위치 상태
 	private Location loc;
 
@@ -35,14 +38,14 @@ public class Enemy extends JLabel implements Movable {
 	
 	private int state; // 0(live) , 1(bubbled)
 
-	// 플레이어의 방향
+	// 적 방향
 	private EnemyWay enemyWay;
 
 	// 플레이어 이동 속도
 	private final int SPEED = 3;
 	private final int JUMP_SPEED = 1; // up, down
 	private ImageIcon enemyR, enemyL;
-	
+	private ImageIcon bomb; // 플레이어 터짐
 	// 적 움직임에 대한 패턴
 	private EnemyPattern pattern;
 	List<EnemyWay> moveList;
@@ -50,6 +53,8 @@ public class Enemy extends JLabel implements Movable {
 	public Enemy(BubbleFrame mContext, Location loc) {
 		this.loc = loc;
 		this.mContext = mContext;
+		this.player = this.mContext.getPlayer();
+		
 		initObject();
 		initSetting();
 		initBackgroundEnemyService();
@@ -59,6 +64,7 @@ public class Enemy extends JLabel implements Movable {
 	private void initObject() {
 		enemyR = new ImageIcon("image/enemyR.png");
 		enemyL = new ImageIcon("image/enemyL.png");
+		bomb = new ImageIcon("image/bomb.png");
 	}
 
 	private void initSetting() {
@@ -98,6 +104,10 @@ public class Enemy extends JLabel implements Movable {
 				setIcon(enemyL);
 				loc.setX(loc.getX() - SPEED);
 				setLocation(loc.getX(), loc.getY());
+				Player hitPlayer = hitPlayer(player);
+				if(hitPlayer != null) {
+					killPlayer(hitPlayer);
+				}
 				try {
 					Thread.sleep(10);
 				} catch (Exception e) {
@@ -108,6 +118,7 @@ public class Enemy extends JLabel implements Movable {
 //		System.out.println("left 스레드 종료");
 	}
 
+	
 	@Override
 	public void right() {
 //		System.out.println("right 스레드 생성");
@@ -118,6 +129,11 @@ public class Enemy extends JLabel implements Movable {
 				setIcon(enemyR);
 				loc.setX(loc.getX() + SPEED);
 				setLocation(loc.getX(), loc.getY());
+				
+				Player hitPlayer = hitPlayer(player);
+				if(hitPlayer != null) {
+					killPlayer(hitPlayer);
+				}
 				try {
 					Thread.sleep(10);
 				} catch (Exception e) {
@@ -138,6 +154,10 @@ public class Enemy extends JLabel implements Movable {
 			for (int i = 0; i < 130 / JUMP_SPEED; i++) {
 				loc.setY(loc.getY() - JUMP_SPEED);
 				setLocation(loc.getX(), loc.getY());
+				Player hitPlayer = hitPlayer(player);
+				if(hitPlayer != null) {
+					killPlayer(hitPlayer);
+				}
 				try {
 					Thread.sleep(5);
 				} catch (InterruptedException e) {
@@ -157,6 +177,10 @@ public class Enemy extends JLabel implements Movable {
 			while (down) {
 				loc.setY(loc.getY() + JUMP_SPEED);
 				setLocation(loc.getX(), loc.getY());
+				Player hitPlayer = hitPlayer(player);
+				if(hitPlayer != null) {
+					killPlayer(hitPlayer);
+				}
 				try {
 					Thread.sleep(3);
 				} catch (InterruptedException e) {
@@ -166,5 +190,29 @@ public class Enemy extends JLabel implements Movable {
 			down = false;
 		}).start();
 	}
+	private Player hitPlayer(Player player) {
+		if((Math.abs(loc.getX() - player.getX()) < 10) 
+				&& (Math.abs(loc.getY() - player.getY()) > 0 && Math.abs(loc.getY() - player.getY()) < 50)) {
+			if(player.getState() == 1) {
+				System.out.println("적군, 플레이어 충돌");
+				return player;
+			}
+		}
+		return null;
+	}
 
+	@Override
+	public void killPlayer(Player plyaer) {
+		try {
+			player.setState(0);
+			setIcon(bomb);
+			Thread.sleep(500);
+			mContext.remove(plyaer);
+			mContext.repaint();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 }
